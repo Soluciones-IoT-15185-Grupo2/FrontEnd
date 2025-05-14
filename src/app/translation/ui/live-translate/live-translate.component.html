@@ -1,0 +1,35 @@
+<div class="container">
+  <mat-card class="translate-card">
+    <mat-card-header>
+      <mat-card-title>Traducción en vivo</mat-card-title>
+      <mat-card-subtitle>Escribe texto o pega tu JSON de gestos</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Entrada</mat-label>
+        <textarea matInput rows="5" [(ngModel)]="inputData"
+                  placeholder="Ej: { handPosition: 'up', fingerAngles: [...], ... }"></textarea>
+      </mat-form-field>
+
+      <div class="actions">
+        <button mat-flat-button color="accent"
+                [disabled]="!inputData || loading"
+                (click)="onTranslate()">
+          Traducir
+        </button>
+        <mat-progress-spinner *ngIf="loading"
+                              mode="indeterminate"
+                              diameter="24">
+        </mat-progress-spinner>
+      </div>
+
+      <div *ngIf="resultText" class="result">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Resultado</mat-label>
+          <textarea matInput rows="5" [value]="resultText" readonly></textarea>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
