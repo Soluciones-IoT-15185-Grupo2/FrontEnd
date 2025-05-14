@@ -1,22 +1,26 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { SharedModule }             from '../shared/shared.module';
+import { HttpClientModule }         from '@angular/common/http';
 import { TranslationRoutingModule } from './translation-routing.module';
-import { SharedModule } from '../shared/shared.module';
-import { TranslationApiServiceService } from './infraestructure/translation-api.service.service';
-import { TranslationAppServiceService } from './application/translation-app.service.service';
+import { MaterialModule } from '../material/material.module';
+
+import { LiveTranslateComponent }   from './ui/live-translate/live-translate.component';
+import { TranslationAppService }    from './application/translation-app.service';
+import { TranslationApiService } from './infraestructure/translation-api.service';
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    LiveTranslateComponent
+  ],
   imports: [
-    CommonModule,
-    TranslationRoutingModule,
+    SharedModule,
     HttpClientModule,
-    SharedModule
+    TranslationRoutingModule,
+    MaterialModule
   ],
   providers: [
-    TranslationApiServiceService,
-    TranslationAppServiceService
+    TranslationApiService,
+    TranslationAppService
   ]
 })
 export class TranslationModule { }
