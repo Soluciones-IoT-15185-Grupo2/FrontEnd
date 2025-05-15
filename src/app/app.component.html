@@ -1,8 +1,20 @@
 <mat-toolbar color="primary">
   <span class="app-title">SmartSign</span>
   <span class="spacer"></span>
-  <a mat-button routerLink="/translation/translate">Traducción</a>
-  <a mat-button routerLink="/translation/history">Historial</a>
+
+  <!-- Solo mostrar si hay sesión activa -->
+  <button mat-button routerLink="/translation/translate"
+          *ngIf="auth.isLoggedIn()">
+    Traducción
+  </button>
+  <button mat-button routerLink="/translation/history"
+          *ngIf="auth.isLoggedIn()">
+    Historial
+  </button>
+  <button mat-button (click)="onLogout()"
+          *ngIf="auth.isLoggedIn()">
+    Logout
+  </button>
 </mat-toolbar>
 
 <router-outlet></router-outlet>
