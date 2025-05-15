@@ -10,6 +10,7 @@ const Navbar = () => {
             <ul className="navbar-links">
                 <li><a href="#traductor">Traductor</a></li>
                 <li><a href="#historial">Historial</a></li>
+                <button className = "logout">LogOut</button>
             </ul>
         </nav>
     )
