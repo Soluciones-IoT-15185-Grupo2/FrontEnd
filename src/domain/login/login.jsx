@@ -18,6 +18,10 @@ export function Login() {
         navigate("/home");
     }
 
+    const handlerRegisterCLick = () => {
+        navigate("/register");
+    }
+
     return (
         <div className="login-container">
             <form className="login-form" onSubmit={handleSubmit}>
@@ -43,7 +47,7 @@ export function Login() {
                     />
                 </div>
                 <button type="submit" className="login-button" onClick={handlerLoginClick}>Login</button>
-                <button type="submit" className="register-button" >Register</button>
+                <button type="submit" className="register-button" onClick={handlerRegisterCLick} >Register</button>
             </form>
         </div>
     );
