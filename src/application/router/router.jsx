@@ -3,12 +3,12 @@ import { Home } from "../../domain/home/Home.jsx";
 import {Login} from "../../domain/login/login.jsx";
 export function MyRoutes() {
     return (
-        <BrowserRouter>
+
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/login" element={<Login />} />
             </Routes>
-        </BrowserRouter>
+
     );
 }
