@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Home.css";
 import {useNavigate} from "react-router-dom";
+import Navbar from "../../infraestructure/ui/components/navbar/navbar.jsx";
 export function Home() {
     const [translation, setTranslation] = useState("");
 
@@ -32,7 +33,7 @@ export function Home() {
 
     return (
         <>
-
+            <Navbar />
         <div className="home">
             <h1>Traduccion en vivo</h1>
             <div className="translation-box">
