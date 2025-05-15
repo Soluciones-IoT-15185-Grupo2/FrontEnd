@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import "./login.css";
+import { useNavigate } from "react-router-dom";
 
 export function Login() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -12,6 +14,9 @@ export function Login() {
         console.log("Login submitted:", { email, password });
     };
 
+    const handlerLoginClick = () => {
+        navigate("/home");
+    }
 
     return (
         <div className="login-container">
@@ -37,8 +42,8 @@ export function Login() {
                         required
                     />
                 </div>
-                <button type="submit" className="login-button">Login</button>
-                <button type="submit" className="register-button">Register</button>
+                <button type="submit" className="login-button" onClick={handlerLoginClick}>Login</button>
+                <button type="submit" className="register-button" >Register</button>
             </form>
         </div>
     );

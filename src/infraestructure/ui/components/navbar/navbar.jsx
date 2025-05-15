@@ -1,7 +1,14 @@
 import React from "react";
 import  "./navbar.css";
+import {useNavigate} from "react-router-dom";
 
 const Navbar = () => {
+
+    const navigate = useNavigate();
+
+    const handlerLogoutClick = () => {
+        navigate("/login");
+    }
 
     return (
 
@@ -10,7 +17,7 @@ const Navbar = () => {
             <ul className="navbar-links">
                 <li><a href="#traductor">Traductor</a></li>
                 <li><a href="#historial">Historial</a></li>
-                <button className = "logout">LogOut</button>
+                <button className = "logout" onClick={handlerLogoutClick}>LogOut</button>
             </ul>
         </nav>
     )

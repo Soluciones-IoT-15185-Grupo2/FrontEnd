@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./Home.css";
-
+import {useNavigate} from "react-router-dom";
 export function Home() {
     const [translation, setTranslation] = useState("");
+
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        navigate("/login");
+    }
+
 
     useEffect(() => {
         // Replace with your backend API endpoint
@@ -31,7 +38,7 @@ export function Home() {
             <div className="translation-box">
                 {translation ? translation : "Cargando traducción..."}
             </div>
-            <button className="clear">Iniciar Nueva Traduccion</button>
+            <button className="clear" >Iniciar Nueva Traduccion</button>
         </div>
         </>
     );
