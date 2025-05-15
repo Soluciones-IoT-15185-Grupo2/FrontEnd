@@ -6,6 +6,11 @@ export function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Replace with your backend API call
+        console.log("Login submitted:", { email, password });
+    };
 
 
     return (
