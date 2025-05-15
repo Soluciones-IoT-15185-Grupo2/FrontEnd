@@ -38,6 +38,7 @@ export function Login() {
                     />
                 </div>
                 <button type="submit" className="login-button">Login</button>
+                <button type="submit" className="register-button">Register</button>
             </form>
         </div>
     );
