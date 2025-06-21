@@ -45,7 +45,7 @@
 }
 
 .logout:hover {
-    background-color: #whitesmoke; /* Color al pasar el mouse */
+    background-color: whitesmoke; /* Color al pasar el mouse */
     color: #282c34; /* Cambia el color del texto al pasar el mouse */
     transform: scale(1.05); /* Efecto de agrandamiento */
 }
