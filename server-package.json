@@ -1,0 +1,22 @@
+{
+  "name": "glovetalk-server",
+  "version": "1.0.0",
+  "description": "Servidor de comunicación con guantes ESP32 para GloveTalk",
+  "main": "glove-server.js",
+  "scripts": {
+    "start": "node glove-server.js",
+    "dev": "nodemon glove-server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "serialport": "^12.0.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["esp32", "gloves", "sensors", "websocket", "serial"],
+  "author": "GloveTalk Team",
+  "license": "MIT"
+}
