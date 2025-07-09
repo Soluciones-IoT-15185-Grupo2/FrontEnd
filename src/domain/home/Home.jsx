@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./Home.css";
 import Navbar from "../../infraestructure/ui/components/navbar/navbar.jsx";
 import { translationService } from "../../infraestructure/services/translationService.js";
@@ -6,267 +6,241 @@ import { translationService } from "../../infraestructure/services/translationSe
 export function Home() {
     const [translation, setTranslation] = useState("");
     const [currentWord, setCurrentWord] = useState("");
-    const [connectedGloves, setConnectedGloves] = useState(0);
     const [isTranslating, setIsTranslating] = useState(false);
+    const [connectionStatus, setConnectionStatus] = useState("checking");
     const [lastSensorData, setLastSensorData] = useState(null);
     const [gestureCount, setGestureCount] = useState(0);
-    const [connectionStatus, setConnectionStatus] = useState("disconnected"); // disconnected, connecting, connected
-    
-    const wsRef = useRef(null);
-    const translationIntervalRef = useRef(null);
-    const reconnectTimeoutRef = useRef(null);
 
-    // Conectar al servidor WebSocket de guantes
-    const connectToGloveServer = () => {
-        setConnectionStatus("connecting");
-        
-        try {
-            wsRef.current = new WebSocket('ws://localhost:8080');
-            
-            wsRef.current.onopen = () => {
-                console.log("🔌 Conectado al servidor de guantes");
-                setConnectionStatus("connected");
-                
-                // Solicitar estado de guantes conectados
-                wsRef.current.send(JSON.stringify({ type: 'requestStatus' }));
-            };
-            
-            wsRef.current.onmessage = (event) => {
-                try {
-                    const message = JSON.parse(event.data);
-                    
-                    switch (message.type) {
-                        case 'glovesStatus':
-                            setConnectedGloves(message.count);
-                            break;
-                            
-                        case 'gloveConnected':
-                            setConnectedGloves(prev => prev + 1);
-                            console.log(`🧤 Guante ${message.gloveId} conectado`);
-                            break;
-                            
-                        case 'gloveDisconnected':
-                            setConnectedGloves(prev => Math.max(0, prev - 1));
-                            console.log(`🧤 Guante ${message.gloveId} desconectado`);
-                            break;
-                            
-                        case 'sensorData':
-                            // Recibir datos de sensores reales
-                            setLastSensorData(message.data);
-                            setGestureCount(prev => prev + 1);
-                            console.log(`📊 Datos recibidos del guante ${message.gloveId}:`, message.data.slice(0, 6), "...");
-                            break;
-                            
-                        default:
-                            console.log("Mensaje desconocido:", message);
-                    }
-                } catch (error) {
-                    console.error("Error procesando mensaje WebSocket:", error);
-                }
-            };
-            
-            wsRef.current.onclose = () => {
-                console.log("🔌 Desconectado del servidor de guantes");
-                setConnectionStatus("disconnected");
-                setConnectedGloves(0);
-                
-                // Intentar reconectar después de 3 segundos
-                reconnectTimeoutRef.current = setTimeout(() => {
-                    connectToGloveServer();
-                }, 3000);
-            };
-            
-            wsRef.current.onerror = (error) => {
-                console.error("❌ Error WebSocket:", error);
-                setConnectionStatus("disconnected");
-            };
-            
-        } catch (error) {
-            console.error("❌ Error conectando a servidor:", error);
-            setConnectionStatus("disconnected");
-        }
-    };
+    const [sensorData, setSensorData] = useState(null);
 
-    // Conectar automáticamente al cargar
     useEffect(() => {
-        connectToGloveServer();
-        
-        // Limpiar al desmontar
-        return () => {
-            if (wsRef.current) {
-                wsRef.current.close();
-            }
-            if (translationIntervalRef.current) {
-                clearInterval(translationIntervalRef.current);
-            }
-            if (reconnectTimeoutRef.current) {
-                clearTimeout(reconnectTimeoutRef.current);
+        const checkGloveConnection = async () => {
+            try {
+                const res = await fetch("http://127.0.0.1:8000/status");
+                const json = await res.json();
+                if (json.connected) {
+                    setConnectionStatus("connected");
+                } else {
+                    setConnectionStatus("disconnected");
+                }
+            } catch (error) {
+                setConnectionStatus("error");
             }
         };
+
+        checkGloveConnection();
     }, []);
 
-    // Iniciar proceso de traducción
-    const startTranslation = () => {
-        if (connectedGloves < 2 || !lastSensorData) {
-            return;
+    const parseSensorDataLine = (rawLine) => {
+        const tokens = rawLine.split(",");
+
+        const parsed = [];
+
+        for (let i = 0; i < tokens.length; i++) {
+            const marker = tokens[i]; // "L" o "R"
+            const isLeftOrRight = marker === "L" || marker === "R";
+
+            if (isLeftOrRight && (i + 8) < tokens.length) {
+                try {
+                    const ax = parseFloat(tokens[i + 3]);
+                    const ay = parseFloat(tokens[i + 4]);
+                    const az = parseFloat(tokens[i + 5]);
+                    const gx = parseFloat(tokens[i + 6]);
+                    const gy = parseFloat(tokens[i + 7]);
+                    const gz = parseFloat(tokens[i + 8]);
+
+                    parsed.push(ax, ay, az, gx, gy, gz);
+                } catch (e) {
+                    console.warn("⚠️ Error al parsear línea:", e);
+                }
+            }
+
+            i += 8; // Salta al siguiente bloque
         }
 
-        setIsTranslating(true);
-        setCurrentWord("");
-        
-        // Traducir inmediatamente el primer gesto si hay datos
-        if (lastSensorData) {
-            translateCurrentGesture();
-        }
-        
-        // NO configuramos intervalo aquí porque los datos llegan cada 5s del hardware
+        return parsed;
     };
 
-    // Detener traducción
+
+    useEffect(() => {
+        const socket = new WebSocket("ws://127.0.0.1:8000/ws");
+
+        socket.onopen = () => {
+            console.log("🟢 WebSocket conectado");
+        };
+
+        socket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.type === "sensorData") {
+                const rawLine = message.data;
+                const parsed = parseSensorDataLine(rawLine);
+
+
+
+                    if (parsed.length === 60) {
+                    setLastSensorData(parsed);
+                    setGestureCount(prev => prev + 1);
+
+                    if (isTranslating) {
+                        console.log("🧠 Ejecutando traducción automática con:", parsed);
+                        translateSensorDataToLetter(parsed);
+                    }
+                }
+
+                else {
+                    console.warn("❌ Datos incompletos recibidos:", parsed.length);
+                }
+            }
+        };
+
+        socket.onerror = (err) => {
+            console.error("❌ WebSocket error:", err);
+        };
+
+        return () => {
+            socket.close();
+        };
+    }, [isTranslating]);
+
+
+    const enviarDatosAlBackend = async (sensorData) => {
+        try {
+            const res = await fetch("http://127.0.0.1:8000/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ data: sensorData })
+            });
+
+            const result = await res.json();
+            const letra = result.prediction || "?";
+            setCurrentWord(prev => prev + letra);
+            console.log("🔤 Letra traducida:", letra);
+        } catch (err) {
+            console.error("❌ Error al enviar datos al backend:", err);
+        }
+    };
+
+
+
+    const translateSensorDataToLetter = async (sensorData) => {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ data: sensorData }),
+            });
+
+            const json = await response.json();
+
+            if (json.prediction) {
+                setCurrentWord((prev) => prev + json.prediction);
+                setTranslation((prev) => prev + json.prediction);
+                console.log("🔤 Letra traducida:", json.prediction);
+            } else {
+                setCurrentWord("?");
+                console.error("❌ Respuesta inesperada:", json);
+            }
+
+            console.log("📨 Enviando datos al backend:", sensorData);
+
+
+        } catch (error) {
+            setCurrentWord("❌ Error al traducir datos");
+            console.error("❌ Error al traducir datos:", error);
+        }
+    };
+
+
+    const startTranslation = () => {
+        setCurrentWord("");
+        setIsTranslating(true);
+    };
+
     const stopTranslation = () => {
         setIsTranslating(false);
-        
-        // Mover la palabra actual a la traducción final
-        if (currentWord) {
-            setTranslation(prev => prev ? `${prev} ${currentWord}` : currentWord);
-            setCurrentWord("");
+        if (translation) {
+            const utterance = new SpeechSynthesisUtterance(translation);
+            utterance.lang = "es-PE"; // Puedes cambiar a "en-US" o "es-ES"
+            speechSynthesis.cancel(); // Detiene cualquier reproducción anterior
+            speechSynthesis.speak(utterance);
         }
     };
 
-    // Traducir gesto cuando llegan nuevos datos (automático)
-    useEffect(() => {
-        if (isTranslating && lastSensorData) {
-            translateCurrentGesture();
-        }
-    }, [lastSensorData, isTranslating]);
 
-    // Traducir gesto actual
-    const translateCurrentGesture = async () => {
-        if (!lastSensorData || !isTranslating) return;
-
-        try {
-            const result = await translationService.translateSensorData(lastSensorData);
-            const letter = result.prediction || result.translation || result.message || "?";
-            
-            // Agregar la letra a la palabra actual
-            setCurrentWord(prev => prev + letter);
-            console.log("🔤 Nueva letra traducida:", letter);
-        } catch (error) {
-            console.error("❌ Error en traducción:", error);
-        }
-    };
-
-    // Limpiar todo
-    const clearAll = () => {
-        setCurrentWord("");
-        setTranslation("");
-        setGestureCount(0);
-    };
-
-    // Reconectar manualmente
-    const reconnectToServer = () => {
-        if (wsRef.current) {
-            wsRef.current.close();
-        }
-        connectToGloveServer();
-    };
 
     return (
         <>
             <Navbar />
             <div className="home">
                 <h1>GloveTalk</h1>
-                
+
                 <div className="glove-status-section">
                     <div className={`connection-status ${connectionStatus}`}>
-                        {connectionStatus === 'disconnected' && '🔴 Desconectado del servidor'}
-                        {connectionStatus === 'connecting' && '🟡 Conectando...'}
-                        {connectionStatus === 'connected' && '🟢 Servidor conectado'}
+                        {connectionStatus === 'checking' && '🔄 Verificando conexión...'}
+                        {connectionStatus === 'connected' && '🟢 Guante conectado'}
+                        {connectionStatus === 'disconnected' && '🔴 Guante no conectado'}
+                        {connectionStatus === 'error' && '⚠️ Error al verificar'}
                     </div>
-                    
-                    <div className={`glove-status ${connectedGloves === 2 ? 'ready' : 'waiting'}`}>
-                        🧤 Guantes conectados: {connectedGloves}/2
-                        {connectedGloves === 2 && ' ✅ Listos para traducir'}
-                    </div>
-                    
-                    {connectedGloves > 0 && (
-                        <div className="data-collection-status">
-                            📊 Datos recibidos: {gestureCount} gestos
-                        </div>
-                    )}
                 </div>
 
+
                 <div className="control-buttons">
-                    {connectionStatus === 'disconnected' && (
-                        <button 
-                            className="reconnect-btn"
-                            onClick={reconnectToServer}
-                        >
-                            � Reconectar al Servidor
-                        </button>
-                    )}
 
-                    {connectedGloves === 2 && !isTranslating && (
-                        <button 
-                            className="translate-btn primary"
-                            onClick={startTranslation}
-                            disabled={!lastSensorData}
-                        >
-                            🎯 Iniciar Traducción
-                        </button>
-                    )}
 
-                    {isTranslating && (
-                        <button 
-                            className="translate-btn stop"
-                            onClick={stopTranslation}
-                        >
-                            ⏹️ Detener Traducción
-                        </button>
-                    )}
 
-                    {(currentWord || translation) && (
-                        <button 
+                    <button
+                        onClick={startTranslation}
+                        disabled={connectionStatus !== "connected" || isTranslating}
+                        className="translate-btn primary"
+                    >
+                        🎯 Iniciar Traducción
+                    </button>
+
+
+                    {(translation || currentWord) && (
+                        <button
+                            onClick={() => {
+                                setTranslation("");
+                                setCurrentWord("");
+                                setGestureCount(0);
+                            }}
                             className="clear-btn"
-                            onClick={clearAll}
                         >
                             🔄 Limpiar
                         </button>
+
                     )}
+
+                    {isTranslating && (
+                        <button
+                            onClick={() => stopTranslation()}
+                            className="translate-btn stop"
+                        >
+                            ⏹️ Detener y Reproducir Audio
+                        </button>
+                    )}
+
+
+
                 </div>
 
-                {connectedGloves < 2 && connectionStatus === 'connected' && (
-                    <div className="waiting-message">
-                        <p>⏳ Esperando que se conecten ambos guantes...</p>
-                        <small>Asegúrate de que los ESP32 estén conectados por USB-C</small>
-                    </div>
-                )}
-
-                {isTranslating && (
-                    <div className="translation-status">
-                        <div className="current-word-section">
-                            <label>📝 Traduciendo en tiempo real:</label>
-                            <div className="current-word-box">
-                                {currentWord || "..."}
-                                <span className="cursor-blink">|</span>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 <div className="translation-section">
-                    <label>💬 Traducción Completa:</label>
+                    <label>💬 Traducción:</label>
                     <div className="translation-result-box">
                         {translation || "Las palabras traducidas aparecerán aquí"}
                     </div>
                 </div>
-
-                {lastSensorData && (
-                    <div className="sensor-info">
-                        <small>🔧 Debug: Últimos 6 valores de sensores: [{lastSensorData.slice(0, 6).join(', ')}...]</small>
-                    </div>
-                )}
             </div>
         </>
     );
 }
+
+
+// {isTranslating && (
+//     <button
+//         onClick={() => setIsTranslating(false)}
+//         className="translate-btn stop"
+//     >
+//         ⏹️ Detener Traducción
+//     </button>
+// )}

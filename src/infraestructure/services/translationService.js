@@ -33,6 +33,8 @@ export const translationService = {
         }
     },
 
+
+
     // Verificar estado de la API
     async checkApiStatus() {
         try {
@@ -41,5 +43,17 @@ export const translationService = {
         } catch (error) {
             throw new Error(`API no disponible: ${error.message}`);
         }
+    },
+
+    async checkGloveStatus() {
+        try {
+            const response = await apiClient.get('/status');
+            return response.data;
+        } catch (error) {
+            throw new Error(`No se pudo verificar el estado del guante: ${error.message}`);
+        }
     }
+
+
+
 };
