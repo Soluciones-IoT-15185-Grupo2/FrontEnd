@@ -1,6 +1,6 @@
-# GloveTalk - Frontend
+# SmartSign - Frontend
 
-Este repositorio contiene el código fuente del frontend de **GloveTalk**, una aplicación web desarrollada en ReactJS + Vite para la traducción de lenguaje de señas a texto y voz, orientada a la inclusión de personas con discapacidad auditiva o del habla.
+Este repositorio contiene el código fuente del frontend de **SmartSign**, una aplicación web desarrollada en ReactJS + Vite para la traducción de lenguaje de señas a texto y voz, orientada a la inclusión de personas con discapacidad auditiva o del habla.
 
 ## 🚀 Despliegue
 
@@ -11,7 +11,7 @@ La aplicación está desplegada en Vercel y es accesible públicamente en:
 
 1. Clona el repositorio:
    ```bash
-   git clone https://github.com/Grupo-01-GloveTalk/FrontEnd.git
+   git clone https://github.com/Grupo-01-SmartSign/FrontEnd.git
    cd FrontEnd
    ```
 
@@ -47,14 +47,6 @@ La aplicación está desplegada en Vercel y es accesible públicamente en:
 /public
   index.html
 ```
-
-## 👥 Equipo
-
-- Anderson Macedo
-- Joseph Llacchua
-- Marco Méndez
-- Frank Salazar
-- Alvaro Crispin
 
 ## 📄 Licencia
 

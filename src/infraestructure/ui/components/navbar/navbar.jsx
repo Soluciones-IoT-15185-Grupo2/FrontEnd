@@ -25,7 +25,7 @@ const Navbar = () => {
 
     return (
         <nav className="navbar">
-            <div className="navbar-logo">GloveTalk</div>
+            <div className="navbar-logo">SmartSign</div>
             <button className="navbar-burger" onClick={toggleMenu}>
                 <span />
                 <span />

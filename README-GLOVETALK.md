@@ -1,6 +1,6 @@
-# GloveTalk - Traductor de Señas con Guantes Inteligentes
+# SmartSign - Traductor de Señas con Guantes Inteligentes
 
-GloveTalk es una aplicación web que traduce el lenguaje de señas en tiempo real utilizando guantes inteligentes equipados con sensores MPU y ESP32.
+SmartSign es una aplicación web que traduce el lenguaje de señas en tiempo real utilizando guantes inteligentes equipados con sensores MPU y ESP32.
 
 ## 🚀 Características
 
@@ -55,7 +55,7 @@ La aplicación recibe datos de sensores en el siguiente formato desde los ESP32:
 ```bash
 # Clonar el repositorio
 git clone [tu-repositorio]
-cd glovetalk
+cd smartsign
 
 # Instalar dependencias
 npm install
@@ -163,4 +163,4 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 
 ---
 
-¡Gracias por usar GloveTalk! 🤟✨
+¡Gracias por usar SmartSign! 🤟✨

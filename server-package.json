@@ -1,7 +1,7 @@
 {
-  "name": "glovetalk-server",
+  "name": "smartsign-server",
   "version": "1.0.0",
-  "description": "Servidor de comunicación con guantes ESP32 para GloveTalk",
+  "description": "Servidor de comunicación con guantes ESP32 para SmartSign",
   "main": "glove-server.js",
   "scripts": {
     "start": "node glove-server.js",
@@ -17,6 +17,6 @@
     "nodemon": "^3.0.1"
   },
   "keywords": ["esp32", "gloves", "sensors", "websocket", "serial"],
-  "author": "GloveTalk Team",
+  "author": "SmartSign Team",
   "license": "MIT"
 }

@@ -67,7 +67,7 @@ export function History() {
         const url = URL.createObjectURL(dataBlob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `glovetalk-history-${new Date().toISOString().split('T')[0]}.json`;
+        link.download = `smartsign-history-${new Date().toISOString().split('T')[0]}.json`;
         link.click();
     };
 
@@ -95,7 +95,7 @@ export function History() {
                 ) : translations.length === 0 ? (
                     <div className="empty-history">
                         <h3>📭 No hay traducciones en el historial</h3>
-                        <p>Comienza a usar GloveTalk para ver tus traducciones aquí</p>
+                        <p>Comienza a usar SmartSign para ver tus traducciones aquí</p>
                     </div>
                 ) : (
                     <div className="translations-list">

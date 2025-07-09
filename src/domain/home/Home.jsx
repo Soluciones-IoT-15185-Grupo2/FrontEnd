@@ -172,7 +172,7 @@ export function Home() {
         <>
             <Navbar />
             <div className="home">
-                <h1>GloveTalk</h1>
+                <h1>SmartSign</h1>
 
                 <div className="glove-status-section">
                     <div className={`connection-status ${connectionStatus}`}>

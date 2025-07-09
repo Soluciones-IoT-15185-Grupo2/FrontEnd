@@ -31,7 +31,7 @@ const TestConnection = () => {
 
     return (
         <div style={{ padding: '20px', border: '1px solid #ccc', margin: '10px' }}>
-            <h3>🧪 Test de Conexión API - GloveTalk</h3>
+            <h3>🧪 Test de Conexión API - SmartSign</h3>
             <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                 <button onClick={testConnection} disabled={loading}>
                     {loading ? 'Probando...' : '🔗 Probar Conexión'}
